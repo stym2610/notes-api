@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 const bodyparser = require('body-parser');
-const fs = require('fs');
-const jwt = require('jsonwebtoken');
 const notesDataService = require('./express-app/notes-data-service');
 const userDataService = require('./express-app/user-data-service');
 const authenticate = require('./express-app/auth.service').authenticate;
@@ -11,6 +9,9 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended : false}));
 
 
+app.get('/testapi', (request, response) => {
+    response.status(200).send('true');
+});
 
 
 app.get('/notes',  authenticate, notesDataService.getNotes);
@@ -25,8 +26,8 @@ app.post('/signup', userDataService.addUser);
 
 app.post('/authenticate', userDataService.authenticateUser);
 
-app.listen(3000, () => {
-    console.log("API is running at localhost:3000/notes")
+app.listen(process.env.PORT, () => {
+    console.log(`process is running at PORT ${process.env.PORT}`);
 });
 
 
