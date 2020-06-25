@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "value": "NOTE-1",
+    "isPinned": false
+  },
+  {
+    "id": 2,
+    "value": "NOTE-2",
+    "isPinned": false
+  },
+  {
+    "id": 3,
+    "value": "NOTE-3",
+    "isPinned": false
+  },
+  {
+    "id": 4,
+    "value": "NOTE-4",
+    "isPinned": false
+  }
+]
