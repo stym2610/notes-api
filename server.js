@@ -10,7 +10,7 @@ app.use(bodyparser.urlencoded({extended : false}));
 
 
 app.get('/testapi', (request, response) => {
-    response.status(200).send('true');
+    response.status(200).send('API is working');
 });
 
 
@@ -26,8 +26,8 @@ app.post('/signup', userDataService.addUser);
 
 app.post('/authenticate', userDataService.authenticateUser);
 
-app.listen(process.env.PORT, () => {
-    console.log(`process is running at PORT ${process.env.PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`api is running at PORT 3000`);
 });
 
 

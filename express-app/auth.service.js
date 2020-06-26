@@ -23,8 +23,10 @@ module.exports = {
                 else
                 isUserValid = true;    
             });
-            if(isUserValid)
-            next();
+            if(isUserValid){
+                request['currentUser'] = currentUser;
+                next();
+            }    
             else {
                 response.status(401).send({ message: "Login Again" });
             }

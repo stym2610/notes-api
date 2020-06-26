@@ -1,26 +1,50 @@
 const fs = require('fs');
 const constants = require('./constants');
 
+getNextNoteId = (notes) => {
+    return notes.map(note => note.id).reduce((maxId, id) =>  maxId > id ? maxId : id, 1);
+}
+
+checkProperty = (object, key) => {
+    if(object.hasOwnProperty(key) && (object[key] != "") && object[key])
+        return true;
+    return false;    
+}
+
+filterCurrentUserNotes  = (request, response) => {
+    let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
+    let currentUser = request.currentUser;
+    let currentUserNotes = notes.filter(note => note.userId == currentUser.userId);
+    return currentUserNotes;
+}
+
 module.exports = {
 
   getNotes: (request, response) => {
-    response.send(JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString()));
+    // let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
+    // let currentUser = request.currentUser;
+    // console.log(currentUser);
+    // let currentUserNotes = notes.filter(note => note.userId == currentUser.userId);
+    // response.status(200).send(currentUserNotes);
+    response.status(200).send(filterCurrentUserNotes(request, response));
   },
 
   addNotes: (request, response) => {
+    let currentUser = request.currentUser;
     let body = request.body;
     if(!body.hasOwnProperty('value') || body.value == ""){
         response.status(500).send({error : "value dosen't exist on this object"});
     } else {
         let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
         let note = {
-            id : (notes.length + 1),
+            userId : currentUser.userId,
+            id : getNextNoteId(notes),
             value : body.value,
             isPinned : false
         };
         notes.push(note);
         fs.writeFileSync(constants.NOTES_LIST_DATABASE_ADDRESS, JSON.stringify(notes, null, 2));
-        response.status(200).send(JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString()));
+        response.status(200).send(filterCurrentUserNotes(request, response));
       }    
   },
 
@@ -28,9 +52,14 @@ module.exports = {
     let newObject = request.body;
     let isObjectValid = false;
     let objectFound = false;
-    if(newObject.hasOwnProperty("value") && newObject.hasOwnProperty("id") && newObject.hasOwnProperty("isPinned")){isObjectValid = true}     
+    if(checkProperty(newObject, 'value')
+       && checkProperty(newObject, 'id')
+       && checkProperty(newObject,'userId')
+       && newObject.hasOwnProperty('isPinned')){
+           isObjectValid = true
+    }
     if(!isObjectValid){
-        response.status(500).send({error : "wrong value OR value field is empty..!"});
+        response.status(400).send({error : "wrong value OR value field is empty..!"});
     } else {
         let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
         for(var i = 0; i < notes.length; i++){
@@ -44,7 +73,7 @@ module.exports = {
         if(!objectFound){
             response.status(500).send({error : "object with this id is not found.."});
         } else {
-            response.status(200).send(JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString()));
+            response.status(200).send(filterCurrentUserNotes(request, response));
         }
     }
   },
@@ -63,7 +92,7 @@ module.exports = {
     if(!objectFound){
         response.status(500).send({error : "object with this id is not found"});
     } else  {
-        response.status(200).send(JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString()));
+        response.status(200).send(filterCurrentUserNotes(request, response));
     }
   }
 }
