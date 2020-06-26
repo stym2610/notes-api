@@ -2,8 +2,9 @@ const fs = require('fs');
 const constants = require('./constants');
 
 getNextNoteId = (notes) => {
-    return notes.map(note => note.id).reduce((maxId, id) =>  maxId > id ? maxId : id, 1);
+    return notes.map(note => note.id).reduce((maxId, id) =>  maxId <= id ? (id + 1) : maxId, 1);
 }
+
 
 checkProperty = (object, key) => {
     if(object.hasOwnProperty(key) && (object[key] != "") && object[key])
