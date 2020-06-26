@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const bodyparser = require('body-parser');
 const notesDataService = require('./express-app/notes-data-service');
 const userDataService = require('./express-app/user-data-service');
@@ -7,6 +8,7 @@ const authenticate = require('./express-app/auth.service').authenticate;
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended : false}));
+app.use(cors());
 
 
 app.get('/testapi', (request, response) => {
