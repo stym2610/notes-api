@@ -14,8 +14,7 @@ function checkProperty(object, key){
 module.exports = {
     addUser: (request, response) => {
         let user = request.body;
-        if(checkProperty(user, 'firstname') 
-            && checkProperty(user, 'lastname') 
+        if(checkProperty(user, 'name') 
             && checkProperty(user, 'contact') 
             && checkProperty(user, 'password') 
             && checkProperty(user, 'email')) {
