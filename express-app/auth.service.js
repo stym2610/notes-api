@@ -17,8 +17,8 @@ module.exports = {
                     currentUserPassword = user.password;
                 }
             });
-            jwt.verify(token, currentUserPassword, (err, payload) => {
-                if(err)
+            jwt.verify(token, currentUserPassword, (error, payload) => {
+                if(error)
                 isUserValid = false;
                 else
                 isUserValid = true;    

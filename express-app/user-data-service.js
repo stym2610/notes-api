@@ -44,5 +44,13 @@ module.exports = {
         } else {
             response.status(401).send({ error: "There is no account with these credentials" }); 
         }
+    },
+
+    getUser: (request, response) => {
+        let userId = request.currentUser.userId;
+        let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
+        let fullUserDetail = users.filter(user => user.userId == userId)[0];
+        delete fullUserDetail["password"];
+        response.status(200).send(fullUserDetail);
     }
 }

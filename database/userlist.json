@@ -1,15 +1,6 @@
 [
   {
-    "firstname": "Admin",
-    "lastname": "Admin",
-    "email": "abc",
-    "contact": "9149196233",
-    "password": "abc",
-    "userId": "43557483-6414-4aaf-89a7-2e445a00f8b9"
-  },
-  {
-    "firstname": "x",
-    "lastname": "x",
+    "name": "x",
     "email": "x",
     "contact": "x",
     "password": "x",
@@ -21,5 +12,26 @@
     "contact": "aaaaaaaaaa",
     "password": "a",
     "userId": "77ad6a56-99d8-41da-9abc-fb7e8f3aa53d"
+  },
+  {
+    "name": "Satyam Tiwari",
+    "email": "satyam.tiwari2610@gmail.com",
+    "contact": "9149196233",
+    "password": "Abcd1234",
+    "userId": "d271f007-ac4f-46ab-80d1-50c4635babe6"
+  },
+  {
+    "name": "himanshu",
+    "email": "a@a.aa",
+    "contact": "9999999999",
+    "password": "Abcd1234",
+    "userId": "3feeb8de-64e3-45bc-954a-2c3485cb961b"
+  },
+  {
+    "name": "Harsh",
+    "email": "a@a.aa",
+    "contact": "9999999999",
+    "password": "Abcd1234",
+    "userId": "7b65bc7a-c4f1-47a5-8c86-b0bf39ee6b7f"
   }
 ]

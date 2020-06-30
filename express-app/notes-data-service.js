@@ -22,11 +22,6 @@ filterCurrentUserNotes  = (request, response) => {
 module.exports = {
 
   getNotes: (request, response) => {
-    // let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
-    // let currentUser = request.currentUser;
-    // console.log(currentUser);
-    // let currentUserNotes = notes.filter(note => note.userId == currentUser.userId);
-    // response.status(200).send(currentUserNotes);
     response.status(200).send(filterCurrentUserNotes(request, response));
   },
 
