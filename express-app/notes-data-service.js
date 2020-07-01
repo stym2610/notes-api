@@ -36,7 +36,8 @@ module.exports = {
             userId : currentUser.userId,
             id : getNextNoteId(notes),
             value : body.value,
-            isPinned : false
+            isPinned : false,
+            color: "#202124"
         };
         notes.push(note);
         fs.writeFileSync(constants.NOTES_LIST_DATABASE_ADDRESS, JSON.stringify(notes, null, 2));
@@ -51,6 +52,7 @@ module.exports = {
     if(checkProperty(newObject, 'value')
        && checkProperty(newObject, 'id')
        && checkProperty(newObject,'userId')
+       && checkProperty(newObject,'color')
        && newObject.hasOwnProperty('isPinned')){
            isObjectValid = true
     }
