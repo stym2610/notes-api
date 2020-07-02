@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "id": 1,
+    "value": "dsv",
+    "isPinned": false,
+    "color": "#3c3f43"
+  },
+  {
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "id": 2,
+    "value": "vdsv",
+    "isPinned": false,
+    "color": "#202124"
+  },
+  {
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "id": 3,
+    "value": "sdv",
+    "isPinned": false,
+    "color": "#202124"
+  },
+  {
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "id": 4,
+    "value": "d",
+    "isPinned": false,
+    "color": "#202124"
+  },
+  {
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "id": 5,
+    "value": "vfd",
+    "isPinned": false,
+    "color": "#202124"
+  },
+  {
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "id": 6,
+    "value": "b",
+    "isPinned": false,
+    "color": "#202124"
+  }
+]
