@@ -24,7 +24,7 @@ module.exports = {
             fs.writeFileSync(constants.USER_LIST_DATABASE_ADDRESS, JSON.stringify(users, null, 2));
             response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
         } else {
-                response.status(200).send({ message: "some properties are missing!!", status: false })
+                response.status(200).send({ message: "REGISTRATION FAILED", status: false })
         }
     },
 

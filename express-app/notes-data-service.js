@@ -15,7 +15,11 @@ checkProperty = (object, key) => {
 filterCurrentUserNotes  = (request, response) => {
     let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
     let currentUser = request.currentUser;
-    let currentUserNotes = notes.filter(note => note.userId == currentUser.userId);
+    let currentUserNotes = notes.filter(note => note.userId == currentUser.userId)
+                                .map(note => {
+                                    delete note['userId'];
+                                    return note;
+                                });
     return currentUserNotes;
 }
 
@@ -47,21 +51,22 @@ module.exports = {
 
   updateNote: (request, response) => {
     let newObject = request.body;
+    let currentUser = request.currentUser;
     let isObjectValid = false;
     let objectFound = false;
     if(checkProperty(newObject, 'value')
        && checkProperty(newObject, 'id')
-       && checkProperty(newObject,'userId')
        && checkProperty(newObject,'color')
        && newObject.hasOwnProperty('isPinned')){
            isObjectValid = true
     }
     if(!isObjectValid){
-        response.status(400).send({error : "wrong value OR value field is empty..!"});
+        response.status(400).send({error : "wrong object to update..!"});
     } else {
         let notes = JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
         for(var i = 0; i < notes.length; i++){
             if(notes[i].id == request.params.id){
+                newObject['userId'] = currentUser.userId;
                 notes[i] = newObject;
                 objectFound = true;
                 fs.writeFileSync(constants.NOTES_LIST_DATABASE_ADDRESS, JSON.stringify(notes, null, 2));
