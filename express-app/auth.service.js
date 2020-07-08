@@ -19,16 +19,16 @@ module.exports = {
             });
             jwt.verify(token, currentUserPassword, (error, payload) => {
                 if(error)
-                isUserValid = false;
+                    isUserValid = false;
                 else
-                isUserValid = true;    
+                    isUserValid = true;    
             });
             if(isUserValid){
                 request['currentUser'] = currentUser;
                 next();
             }    
             else {
-                response.status(401).send({ message: "Login Again" });
+                response.status(401).send({ message: "token not valid", status: false });
             }
         }  
     }
