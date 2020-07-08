@@ -87,7 +87,7 @@ module.exports = {
                 subject: '[SAVENOTES]-verification mail to change password',
                 html: `<p>You're receiving this e-mail because you or someone else has requested a password reset for your user account</p><br><br>
                        <p>Click the link below to reset your password:</p>
-                       <a href="http://localhost:4200/changepassword?token=${token}">http://localhost:4200/changepassword?token=${token}</a>`
+                       <a href="http://notes--app-ui.herokuapp.com/changepassword?token=${token}">http://notes--app-ui.herokuapp.com/changepassword?token=${token}</a>`
             };
             transporter.sendMail(mailOptions, (error, info) => {
                 if(error)
