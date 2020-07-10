@@ -10,7 +10,7 @@
 # dependencies
 /node_modules
 
-#database
+#database_files
 /database
 
 # profiling files
