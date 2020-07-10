@@ -1,4 +1,6 @@
-const jwt = require('jsonwebtoken');
-
-let token = "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0eW0yNjEwQGdtYWlsLmNvbSIsInVzZXJJZCI6ImQyNzFmMDA3LWFjNGYtNDZhYi04MGQxLTUwYzQ2MzViYWJlNiIsImlhdCI6MTU5NDEwODAzMywiZXhwIjoxNTk0MTExNjMzfQ.iYljar2-UP-pqunjja3L5wagI6kOj4k1SxRUeQB_u8Q'";
- console.log(jwt.decode(token));
+var a = [1,2,3,4,5];
+var x = a.find(num => num == 2);
+var y = a.filter(num => {
+    return num == 2;
+});
+console.log(x,y);

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const userDAL = require('./data-access-layer/userDAL');
 const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 const constants = require('./constants');
@@ -18,11 +19,11 @@ module.exports = {
         if(checkProperty(user, 'name') 
             && checkProperty(user, 'contact') 
             && checkProperty(user, 'password') 
-            && checkProperty(user, 'email')) {
-            let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
-            user['userId'] = uuid.v4();   // adding new property userId to user
-            users.push(user);
-            fs.writeFileSync(constants.USER_LIST_DATABASE_ADDRESS, JSON.stringify(users, null, 2));
+            && checkProperty(user, 'email')){
+            user['userId'] = uuid.v4();
+            user['createdOn'] = new Date().toString().slice(0, 24);
+            user['lastLogin'] = null;
+            userDAL.addUser(user);
             response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
         } else {
                 response.status(200).send({ message: "REGISTRATION FAILED", status: false })
@@ -31,45 +32,34 @@ module.exports = {
     
     changeUserDetail: (request, response) => {
         let changedUserDetails = request.body;
-        let userFound = false;
-        let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
-        users = users.map(user => {
-            if(user.email == changedUserDetails.email){
-                userFound = true;
-                return changedUserDetails;
-            } else {
-                return user;
-            }
-        });
-        if(userFound){
-            fs.writeFileSync(constants.USER_LIST_DATABASE_ADDRESS, JSON.stringify(users, null, 2));
+        if(userDAL.updateUser(changedUserDetails))
             response.status(200).send({ message: "Password changed successfully", status: true });
-        } else {
+        else 
             response.status(404).send({ message: "Some error occured.. Try again later", status: false });
-        }
     },
 
     authenticateUser: (request, response) => {
         let credentials = request.body;
         let token;     
         let userFound = false;
-        let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
+        let users = userDAL.getAllUsers();
         users.forEach(user => {
             if(credentials.email == user.email && credentials.password == user.password){
                 userFound = true;
+                user['lastLogin'] = new Date().toString().slice(0, 24);
                 token = jwt.sign({ email: user.email, userId: user.userId }, user.password, { expiresIn: constants.TOKEN_VALIDITY });
+                userDAL.writeAllUsers(users);
             }   
         });
-        if(userFound){
+        if(userFound)
             response.status(200).send({ token: token });
-        } else {
-            response.status(401).send({ error: "There is no account with these credentials" }); 
-        }
+        else
+            response.status(401).send({ error: "There is no account with these credentials" });
     },
 
     sendChangePasswordMail: (request, response) => {
         let email = request.body.email;
-        let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
+        let users = userDAL.getAllUsers();
         let matchedUserArray = users.filter(user => user.email == email);
         if(matchedUserArray.length == 1){
             let currentUser = matchedUserArray[0];
@@ -85,9 +75,14 @@ module.exports = {
                 from: 'savenotes.help@gmail.com',
                 to: currentUser.email,
                 subject: '[SAVENOTES]-verification mail to change password',
-                html: `<p>You're receiving this e-mail because you or someone else has requested a password reset for your user account</p><br><br>
+                html: `<p>You're receiving this e-mail because you or someone else has requested a password reset for your user account</p><br>
                        <p>Click the link below to reset your password:</p>
-                       <a href="http://notes--app-ui.herokuapp.com/changepassword?token=${token}">http://notes--app-ui.herokuapp.com/changepassword?token=${token}</a>`
+                       <a href="http://notes--app-ui.herokuapp.com/changepassword?token=${token}">http://notes--app-ui.herokuapp.com/changepassword?token=${token}</a>
+                       <br><br>
+                       <p>If you don't use this link within 1 hour, it will expire. To get a new passowrd reset link, visit</p><br>
+                       <a href="http://notes--app-ui.herokuapp.com/forgotpassword">http://notes--app-ui.herokuapp.com/forgotpassword</a>
+                       <br><br>
+                       <p>Thanks</p>`
             };
             transporter.sendMail(mailOptions, (error, info) => {
                 if(error)
@@ -105,11 +100,22 @@ module.exports = {
         response.status(200).send({ message: "token is valid", status: true});
     },
 
-    getUser: (request, response) => {
+    getCurrentUser: (request, response) => {
         let userId = request.currentUser.userId;
-        let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
-        let fullUserDetail = users.filter(user => user.userId == userId)[0];
+        let fullUserDetail = userDAL.getUser(userId);
         delete fullUserDetail["password"];
         response.status(200).send(fullUserDetail);
+    },
+
+    getAllUsers: (request, response) => {
+        let currentUser = request.currentUser;
+        let users = userDAL.getAllUsers();
+        let fullCurrentUserDetails = users.find(user => currentUser.userId == user.userId);
+        if(fullCurrentUserDetails.admin){
+            users = users.filter(user => user.admin != true)
+            response.status(200).send(users);
+        }
+        else
+            response.status(401).send({ message : 'Unauthorised access', status : false });
     }
 }

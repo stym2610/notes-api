@@ -28,13 +28,15 @@ app.post('/signup', userDataService.addUser);
 
 app.post('/authenticate', userDataService.authenticateUser);
 
-app.get('/get-current-user', authenticate, userDataService.getUser);
+app.get('/get-current-user', authenticate, userDataService.getCurrentUser);
 
 app.post('/forget-password', userDataService.sendChangePasswordMail);
 
 app.get('/change-password', authenticate, userDataService.checkChangePasswordToken);
 
 app.post('/change-user-detail', userDataService.changeUserDetail);
+
+app.get('/get-all-users', authenticate, userDataService.getAllUsers);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(`api is running at PORT 3000`);

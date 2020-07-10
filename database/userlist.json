@@ -1,30 +1,75 @@
 [
   {
+    "name": "Admin",
+    "email": "admin@gmail.com",
+    "contact": "9149196233",
+    "admin": true,
+    "password": "Admin123",
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3010",
+    "createdOn": null,
+    "lastLogin": "Fri Jul 10 2020 15:34:55"
+  },
+  {
     "name": "x",
     "email": "x",
     "contact": "x",
     "password": "x",
-    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101"
-  },
-  {
-    "name": "Satyam Tiwari",
-    "email": "satyam.tiwari2610@gmail.com",
-    "contact": "9149196233",
-    "userId": "d271f007-ac4f-46ab-80d1-50c4635babe6",
-    "password": "Nwpa718b01"
+    "userId": "8454734d-4cd9-4d5a-bf35-6da907cf3101",
+    "createdOn": "Thu Jul 09 2020 17:35:37",
+    "lastLogin": "Fri Jul 10 2020 10:56:34"
   },
   {
     "name": "Satyam Tiwari",
     "email": "stym2610@gmail.com",
     "contact": "9149196233",
     "userId": "d271f007-ac4f-46ab-80d1-50c4635abcd0",
-    "password": "Xxxx1234"
+    "password": "Xxxx1234",
+    "createdOn": "Thu Jul 09 2020 17:35:37",
+    "lastLogin": null
   },
   {
     "name": "Harsh",
     "email": "a@a.aa",
     "contact": "9999999999",
     "password": "Abcd1234",
-    "userId": "7b65bc7a-c4f1-47a5-8c86-b0bf39ee6b7f"
+    "userId": "7b65bc7a-c4f1-47a5-8c86-b0bf39ee6b7f",
+    "createdOn": "Thu Jul 09 2020 17:35:37",
+    "lastLogin": "Fri Jul 10 2020 15:25:39"
+  },
+  {
+    "name": "dheeela",
+    "email": "xyz@x.xy",
+    "contact": "0000000000",
+    "password": "Xyz12345",
+    "userId": "37cfe3d6-47bc-4707-bd49-7b4c1a0a3992",
+    "createdOn": "Thu Jul 09 2020 17:35:37",
+    "lastLogin": null
+  },
+  {
+    "name": "ddsa",
+    "email": "x@x.xx",
+    "contact": "0000000000",
+    "password": "Abcd1234",
+    "userId": "0ca6cf1d-07fc-471c-b575-384f149b5551",
+    "createdOn": "Thu Jul 09 2020 17:35:37",
+    "lastLogin": "Fri Jul 10 2020 10:40:32"
+  },
+  {
+    "name": "pappu",
+    "email": "x@x.xx",
+    "contact": "0000000000",
+    "password": "Abcd1234",
+    "userId": "ba078d4c-501b-4955-91da-e6f346a9fb70",
+    "createdOn": "Fri Jul 10 2020 10:40:16",
+    "lastLogin": "Fri Jul 10 2020 10:40:32"
+  },
+  {
+    "name": "naya user",
+    "email": "a@a.ab",
+    "contact": "9191919191",
+    "password": "Abcd1234",
+    "userId": "b19818c4-9f52-48d9-bb15-5e2a56f755ba",
+    "createdOn": "Fri Jul 10 2020 15:34:35",
+    "lastLogin": null
   }
 ]
