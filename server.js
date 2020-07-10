@@ -17,7 +17,7 @@ if(!fs.existsSync('./database'))
 
 if(!fs.existsSync('./database/saved-notes.json'))
     fs.writeFileSync('./database/saved-notes.json', '[]');
-``
+
 if(!fs.existsSync('./database/userlist.json'))
     fs.writeFileSync('./database/userlist.json', '[]');
 
