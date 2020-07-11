@@ -1,4 +1,3 @@
-const fs = require('fs');
 const userDAL = require('./data-access-layer/userDAL');
 const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -15,18 +14,23 @@ function checkProperty(object, key){
 
 module.exports = {
     addUser: (request, response) => {
-        let user = request.body;
-        if(checkProperty(user, 'name') 
-            && checkProperty(user, 'contact') 
-            && checkProperty(user, 'password') 
-            && checkProperty(user, 'email')){
-            user['userId'] = uuid.v4();
-            user['createdOn'] = new Date().toString().slice(0, 24);
-            user['lastLogin'] = null;
-            userDAL.addUser(user);
-            response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
+        let newUser = request.body;
+        if(checkProperty(newUser, 'name') 
+            && checkProperty(newUser, 'contact') 
+            && checkProperty(newUser, 'password') 
+            && checkProperty(newUser, 'email')){
+            let users = userDAL.getAllUsers();
+            if(!users.find(user => user.email == newUser.email)){
+                newUser['userId'] = uuid.v4();
+                newUser['createdOn'] = new Date().toString().slice(0, 24);
+                newUser['lastLogin'] = null;
+                userDAL.addUser(newUser);
+                response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
+            } else {
+                response.status(400).send({ message: "EMAIL IS ALREADY IN USE", status: false});
+            }
         } else {
-                response.status(200).send({ message: "REGISTRATION FAILED", status: false })
+                response.status(400).send({ message: "REGISTRATION FAILED", status: false })
         }
     },
     
