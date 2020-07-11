@@ -27,7 +27,7 @@ if(!fs.existsSync('./database/userlist.json')){
             "password": "Admin123",
             "userId": "a9ec094b-d107-4d67-b7ee-3ead96c54a0c",
             "admin": true,
-            "createdOn": "Fri Jul 10 2020 20:58:03",
+            "createdDate": "Fri Jul 10 2020 20:58:03",
             "lastLogin": null
           }
         ]`);

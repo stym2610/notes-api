@@ -1,1 +1,1 @@
-console.log(new Date().toString().slice(0,24));
+console.log(+(new Date()));

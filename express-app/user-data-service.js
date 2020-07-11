@@ -22,7 +22,7 @@ module.exports = {
             let users = userDAL.getAllUsers();
             if(!users.find(user => user.email == newUser.email)){
                 newUser['userId'] = uuid.v4();
-                newUser['createdOn'] = new Date().toString().slice(0, 24);
+                newUser['createdDate'] = +(new Date());
                 newUser['lastLogin'] = null;
                 userDAL.addUser(newUser);
                 response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
@@ -50,7 +50,7 @@ module.exports = {
         users.forEach(user => {
             if(credentials.email == user.email && credentials.password == user.password){
                 userFound = true;
-                user['lastLogin'] = new Date().toString().slice(0, 24);
+                user['lastLogin'] = +(new Date());
                 token = jwt.sign({ email: user.email, userId: user.userId }, user.password, { expiresIn: constants.TOKEN_VALIDITY });
                 userDAL.writeAllUsers(users);
             }   
