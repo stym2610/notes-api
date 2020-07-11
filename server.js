@@ -18,8 +18,20 @@ if(!fs.existsSync('./database'))
 if(!fs.existsSync('./database/saved-notes.json'))
     fs.writeFileSync('./database/saved-notes.json', '[]');
 
-if(!fs.existsSync('./database/userlist.json'))
-    fs.writeFileSync('./database/userlist.json', '[]');
+if(!fs.existsSync('./database/userlist.json')){
+    fs.writeFileSync('./database/userlist.json', `[
+        {
+            "name": "Admin",
+            "email": "admin@gmail.com",
+            "contact": "9149196233",
+            "password": "Admin123",
+            "userId": "a9ec094b-d107-4d67-b7ee-3ead96c54a0c",
+            "admin": true,
+            "createdOn": "Fri Jul 10 2020 20:58:03",
+            "lastLogin": null
+          }
+        ]`);
+}
 
 
 app.get('/testapi', (request, response) => {
