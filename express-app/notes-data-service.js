@@ -1,10 +1,4 @@
-const fs = require('fs');
-const constants = require('./constants');
 const notesDAL = require('./data-access-layer/notesDAL');
-
-getNextNoteId = (notes) => {
-    return notes.map(note => note.id).reduce((maxId, id) =>  maxId <= id ? (id + 1) : maxId, 1);
-}
 
 
 checkProperty = (object, key) => {
@@ -13,39 +7,34 @@ checkProperty = (object, key) => {
     return false;    
 }
 
-filterCurrentUserNotes  = (request, response) => {
-    let currentUserId = request.currentUser.userId;
-    return notesDAL.getNotes(currentUserId);
-}
 
 module.exports = {
 
-  getNotes: (request, response) => {
-    response.status(200).send(filterCurrentUserNotes(request, response));
+  getNotes: async (request, response) => {
+    response.status(200).send(await notesDAL.getNotes(request.currentUser.userId))
   },
 
-  addNotes: (request, response) => {
+  addNotes: async (request, response) => {
     let currentUser = request.currentUser;
     let body = request.body;
     if(!body.hasOwnProperty('value') || body.value == ""){
         response.status(500).send({error : "value dosen't exist on this object"});
     } else {
-        let notes = notesDAL.getAllNotes();
         let note = {
             userId : currentUser.userId,
-            id : getNextNoteId(notes),
             value : body.value,
             isPinned : false,
             color: "#202124"
         };
-        notesDAL.addNote(note);
-        response.status(200).send(filterCurrentUserNotes(request, response));
+        if(await notesDAL.addNote(note))
+            response.status(200).send(await notesDAL.getNotes(request.currentUser.userId));
+        else
+            response.status(500).send({message: 'FAILED', status: false});    
       }    
   },
 
-  updateNote: (request, response) => {
+  updateNote: async (request, response) => {
     let newObject = request.body;
-    let currentUser = request.currentUser;
     let isObjectValid = false;
     if(checkProperty(newObject, 'value')
        && checkProperty(newObject, 'id')
@@ -56,18 +45,17 @@ module.exports = {
     if(!isObjectValid){
         response.status(400).send({error : "wrong object to update..!"});
     } else {
-        newObject['userId'] = currentUser.userId;
-        if(notesDAL.updateNote(newObject))
-            response.status(200).send(filterCurrentUserNotes(request, response));
+        if(await notesDAL.updateNote(newObject))
+            response.status(200).send(await notesDAL.getNotes(request.currentUser.userId));
         else
-            response.status(500).send({error : "object with this id is not found.."});
+            response.status(404).send({error : "object with this id is not found.."});
     }
   },
 
-  deleteNote: (request, response) => {
-    if(notesDAL.deleteNote(request.params.id))
-        response.status(200).send(filterCurrentUserNotes(request, response));
+  deleteNote: async (request, response) => {
+    if(await notesDAL.deleteNote(request.params.id))
+        response.status(200).send(await notesDAL.getNotes(request.currentUser.userId));
     else
-        response.status(500).send({error : "object with this id is not found"});
+        response.status(404).send({error : "object with this id is not found"});
   }
 }

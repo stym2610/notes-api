@@ -1,60 +1,69 @@
-var fs = require('fs');
-const constants = require('../constants');
+var utils = require('../utils');
+const { Client } = require('pg');
 
-function getAllNotes(){
-    return JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
+
+function getConnection(){
+    return  new Client({
+          connectionString: process.env.DATABASE_URL,
+        //   connectionString: 'postgres://vxhndzidtvjwqz:d9911a89b48acabcd30911ffa5e8cba731dd4ac17bc2880cc8f7332625ab4d88@ec2-50-19-26-235.compute-1.amazonaws.com:5432/dc3lu4kj0bgis7',
+          ssl: {
+            rejectUnauthorized: false
+          }});
 }
 
-function writeAllNotes(data){
-    fs.writeFileSync(constants.NOTES_LIST_DATABASE_ADDRESS, JSON.stringify(data, null, 2));
-}
 
 module.exports = {
 
-    getAllNotes(){
-        return JSON.parse(fs.readFileSync(constants.NOTES_LIST_DATABASE_ADDRESS).toString());
+    getNotes: async (userId) => {
+        const client = getConnection();
+        try{
+            client.connect();
+            var response = await client.query(`SELECT * FROM notes WHERE user_id = '${userId}'`);
+            await client.end();
+            return utils.transformNoteProperties(response.rows);
+        }
+        catch(err){
+            await client.end();
+        }
     },
 
-    getNotes: (userId) => {
-        return getAllNotes().filter(note => note.userId == userId).map(note => {
-                delete note['userId'];
-                return note;
-            });
+    addNote: async (data) => {
+        const client = getConnection();
+        try{
+            client.connect();
+            var response = await client.query(`INSERT INTO notes (value, is_pinned, color, user_id)
+                          VALUES ('${data.value}', ${data.isPinned}, '${data.color}', '${data.userId}');`);
+            await client.end();
+            return response.rowCount;             
+        }
+        catch(err){
+            await client.end();
+        }
     },
 
-    writeNotes: (data) => {
-        writeAllNotes(data);
+    updateNote: async (newNote) => {
+        const client = getConnection();
+        try{
+            client.connect();
+            var response = await client.query(`UPDATE notes SET value = '${newNote.value}', color = '${newNote.color}', is_pinned = ${newNote.isPinned} WHERE id = ${newNote.id}`);
+            await client.end();
+            return response.rowCount;
+        }
+        catch(err){
+            await client.end();
+        }
     },
 
-    addNote: (data) => {
-        let notes = getAllNotes();
-        notes.push(data);
-        writeAllNotes(notes);
-    },
-
-    updateNote(newNote){
-        let noteFound = false;
-        let notes = getAllNotes().map(note => {
-            if(note.id == newNote.id){
-                noteFound = true;
-                return newNote;
-            }
-            return note;
-        });
-        if(noteFound)
-            writeAllNotes(notes);
-        return noteFound;
-    },
-
-    deleteNote(noteId){
-        let noteFound = false;
-        let notes = getAllNotes().filter(note => {
-            if(note.id == noteId)
-                noteFound = true;
-            return note.id != noteId;    
-        });
-        if(noteFound)
-            writeAllNotes(notes);
-        return noteFound;
+    deleteNote: async (noteId) => {
+        const client = getConnection();
+        try{
+            client.connect();
+            var response = await client.query(`DELETE FROM notes WHERE id = ${noteId}`);
+            await client.end();
+            return response.rowCount;
+        }
+        catch(err){
+            await client.end();
+        }
     }
 }

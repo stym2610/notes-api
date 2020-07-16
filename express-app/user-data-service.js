@@ -1,5 +1,4 @@
 const userDAL = require('./data-access-layer/userDAL');
-const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 const constants = require('./constants');
 const nodemailer = require('nodemailer');
@@ -13,61 +12,58 @@ function checkProperty(object, key){
 
 
 module.exports = {
-    addUser: (request, response) => {
+    addUser: async (request, response) => {
         let newUser = request.body;
         if(checkProperty(newUser, 'name') 
             && checkProperty(newUser, 'contact') 
             && checkProperty(newUser, 'password') 
             && checkProperty(newUser, 'email')){
-            let users = userDAL.getAllUsers();
-            if(!users.find(user => user.email == newUser.email)){
-                newUser['userId'] = uuid.v4();
-                newUser['createdDate'] = +(new Date());
-                newUser['lastLogin'] = null;
-                userDAL.addUser(newUser);
-                response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
+            if(!(await userDAL.checkUserExist(newUser.email))){
+                newUser['registrationDate'] = ('' + (+new Date()));
+                newUser['lastLogin'] = '-';
+                newUser['admin'] = false;
+                if(await userDAL.addUser(newUser))
+                    response.status(200).send({ message: 'REGISTERED SUCCESSFULLY', status: true });
+                else
+                    response.status(500).send({ message: "ERROR IN ADDING TO DATABASE", status: false });
+               
             } else {
                 response.status(400).send({ message: "EMAIL IS ALREADY IN USE", status: false});
             }
         } else {
-                response.status(400).send({ message: "REGISTRATION FAILED", status: false })
+                response.status(400).send({ message: "REGISTRATION FAILED", status: false });
         }
     },
     
-    changeUserDetail: (request, response) => {
+    changeUserDetail: async (request, response) => {
         let changedUserDetails = request.body;
-        if(userDAL.updateUser(changedUserDetails))
+        if(await userDAL.updatePassword(changedUserDetails))
             response.status(200).send({ message: "Password changed successfully", status: true });
         else 
             response.status(404).send({ message: "Some error occured.. Try again later", status: false });
     },
 
-    authenticateUser: (request, response) => {
+    authenticateUser: async (request, response) => {
         let credentials = request.body;
         let token;     
         let userFound = false;
-        let users = userDAL.getAllUsers();
-        users.forEach(user => {
-            if(credentials.email == user.email && credentials.password == user.password){
-                userFound = true;
-                user['lastLogin'] = +(new Date());
-                token = jwt.sign({ email: user.email, userId: user.userId }, user.password, { expiresIn: constants.TOKEN_VALIDITY });
-                userDAL.writeAllUsers(users);
-            }   
-        });
+        let userId = await userDAL.checkUserCredentials(credentials);
+        if(userId){
+            userFound = true;
+            token = jwt.sign({ email: credentials.email, userId: userId }, credentials.password, { expiresIn: constants.TOKEN_VALIDITY });
+            await userDAL.updateLastLogin(userId);
+        }
         if(userFound)
             response.status(200).send({ token: token });
         else
             response.status(401).send({ error: "There is no account with these credentials" });
     },
 
-    sendChangePasswordMail: (request, response) => {
+    sendChangePasswordMail: async (request, response) => {
         let email = request.body.email;
-        let users = userDAL.getAllUsers();
-        let matchedUserArray = users.filter(user => user.email == email);
-        if(matchedUserArray.length == 1){
-            let currentUser = matchedUserArray[0];
-            let token = jwt.sign({ email: currentUser.email, userId: currentUser.userId}, currentUser.password, { expiresIn: 60*60 });
+        let user = await userDAL.checkUserExist(email);
+        if(user){
+            let token = jwt.sign({ email: user.email, userId: user.userId}, user.password, { expiresIn: 60*60 });
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -77,7 +73,7 @@ module.exports = {
             });
             let mailOptions = {
                 from: 'savenotes.help@gmail.com',
-                to: currentUser.email,
+                to: user.email,
                 subject: '[SAVENOTES]-verification mail to change password',
                 html: `<p>You're receiving this e-mail because you or someone else has requested a password reset for your user account</p><br>
                        <p>Click the link below to reset your password:</p>
@@ -104,16 +100,20 @@ module.exports = {
         response.status(200).send({ message: "token is valid", status: true});
     },
 
-    getCurrentUser: (request, response) => {
+    getCurrentUser: async (request, response) => {
         let userId = request.currentUser.userId;
-        let fullUserDetail = userDAL.getUser(userId);
-        delete fullUserDetail["password"];
-        response.status(200).send(fullUserDetail);
+        let fullUserDetail = await userDAL.getUser(userId);
+        if(fullUserDetail){
+            delete fullUserDetail["password"];
+            response.status(200).send(fullUserDetail);
+        } else {
+            response.status(404).send({ message: 'user not found', status: false});
+        }
     },
 
-    getAllUsers: (request, response) => {
+    getAllUsers: async (request, response) => {
         let currentUser = request.currentUser;
-        let users = userDAL.getAllUsers();
+        let users = await userDAL.getAllUsers();
         let fullCurrentUserDetails = users.find(user => currentUser.userId == user.userId);
         if(fullCurrentUserDetails.admin){
             users = users.filter(user => user.admin != true)

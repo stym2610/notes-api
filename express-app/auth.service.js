@@ -1,34 +1,32 @@
-const constants = require('./constants');
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const userDAL = require('./data-access-layer/userDAL');
+
 
 module.exports = {
-    authenticate: (request, response, next) => {
+    authenticate: async (request, response, next) => {
         let token = request.headers.token;
         if(!token) {
             response.status(401).send({ message: "Unauthorised access" });
         } else {
             let currentUser = jwt.decode(token);
             let isUserValid;
-            let currentUserPassword;
-            let users = JSON.parse(fs.readFileSync(constants.USER_LIST_DATABASE_ADDRESS).toString());
-            users.forEach(user => {
-                if(user.email == currentUser.email) {
-                    currentUserPassword = user.password;
+            let user = await userDAL.getUser(currentUser.userId);
+            if(user){
+                jwt.verify(token, user.password, (error, payload) => {
+                    if(error)
+                        isUserValid = false;
+                    else
+                        isUserValid = true;    
+                });
+                if(isUserValid){
+                    request['currentUser'] = currentUser;
+                    next();
+                }    
+                else {
+                    response.status(401).send({ message: "token not valid", status: false });
                 }
-            });
-            jwt.verify(token, currentUserPassword, (error, payload) => {
-                if(error)
-                    isUserValid = false;
-                else
-                    isUserValid = true;    
-            });
-            if(isUserValid){
-                request['currentUser'] = currentUser;
-                next();
-            }    
-            else {
-                response.status(401).send({ message: "token not valid", status: false });
+            } else {
+                response.status(500).send({ message: 'opps!! internal server error..' });
             }
         }  
     }
