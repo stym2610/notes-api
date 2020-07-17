@@ -5,7 +5,9 @@ module.exports = {
                 id: note.id,
                 color: note.color,
                 isPinned: note.is_pinned,
-                userId: note.user_id
+                userId: note.user_id,
+                createdDate: +note.created_date,
+                lastModified: +note.last_modified
             }));
     },
 
@@ -16,8 +18,8 @@ module.exports = {
             email: user.email,
             contact: user.contact,
             admin: user.admin,
-            registrationDate: user.registration_date,
-            lastLogin: user.last_login,
+            registrationDate: +user.registration_date,
+            lastLogin: +user.last_login,
             password: user.password
         }));
     }

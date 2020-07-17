@@ -26,7 +26,7 @@ module.exports = {
                     response.status(401).send({ message: "token not valid", status: false });
                 }
             } else {
-                response.status(500).send({ message: 'opps!! internal server error..' });
+                response.status(404).send({ message: 'internal serve error or user does not exist' });
             }
         }  
     }

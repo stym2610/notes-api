@@ -24,7 +24,7 @@ module.exports = {
             userId : currentUser.userId,
             value : body.value,
             isPinned : false,
-            color: "#202124"
+            color: "#202124",
         };
         if(await notesDAL.addNote(note))
             response.status(200).send(await notesDAL.getNotes(request.currentUser.userId));
@@ -46,7 +46,7 @@ module.exports = {
         response.status(400).send({error : "wrong object to update..!"});
     } else {
         if(await notesDAL.updateNote(newObject))
-            response.status(200).send(await notesDAL.getNotes(request.currentUser.userId));
+            response.status(200).send({ message: 'note updated', status: true });
         else
             response.status(404).send({error : "object with this id is not found.."});
     }
@@ -54,7 +54,7 @@ module.exports = {
 
   deleteNote: async (request, response) => {
     if(await notesDAL.deleteNote(request.params.id))
-        response.status(200).send(await notesDAL.getNotes(request.currentUser.userId));
+        response.status(200).send({ message: 'note deleted', status: true });
     else
         response.status(404).send({error : "object with this id is not found"});
   }
