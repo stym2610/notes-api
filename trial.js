@@ -36,5 +36,11 @@
 //   client.end();
 // });
 
-console.log(+'-');
+var store = {
+    isLoading: true,
+    notes: [1,2,3,4,5],
+    isPinned: fales
+};
+
+var x = store
 

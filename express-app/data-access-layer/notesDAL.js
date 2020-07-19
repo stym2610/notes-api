@@ -4,8 +4,8 @@ const { Client } = require('pg');
 
 function getConnection(){
     return  new Client({
-          connectionString: process.env.DATABASE_URL,
-        //   connectionString: 'postgres://vxhndzidtvjwqz:d9911a89b48acabcd30911ffa5e8cba731dd4ac17bc2880cc8f7332625ab4d88@ec2-50-19-26-235.compute-1.amazonaws.com:5432/dc3lu4kj0bgis7',
+        //   connectionString: process.env.DATABASE_URL,
+          connectionString: 'postgres://vxhndzidtvjwqz:d9911a89b48acabcd30911ffa5e8cba731dd4ac17bc2880cc8f7332625ab4d88@ec2-50-19-26-235.compute-1.amazonaws.com:5432/dc3lu4kj0bgis7',
           ssl: {
             rejectUnauthorized: false
           }});
@@ -24,6 +24,7 @@ module.exports = {
         }
         catch(err){
             await client.end();
+            return null;
         }
     },
 
@@ -33,11 +34,18 @@ module.exports = {
             client.connect();
             var response = await client.query(`INSERT INTO notes (value, is_pinned, color, user_id, created_date, last_modified)
                           VALUES ('${data.value}', ${data.isPinned}, '${data.color}', '${data.userId}', '${('' + (+new Date()))}', '-');`);
-            await client.end();
-            return response.rowCount;             
+            if(response.rowCount){
+                response = await client.query(`SELECT * FROM notes WHERE user_id = '${data.userId}' ORDER BY id ASC`);
+                await client.end();
+                return response.rowCount ? utils.transformNoteProperties(response.rows) :  response.rowCount;
+            } else {
+                await client.end();
+                return response.rowCount;             
+            }
         }
         catch(err){
             await client.end();
+            return null;
         }
     },
 
@@ -51,6 +59,7 @@ module.exports = {
         }
         catch(err){
             await client.end();
+            return null;
         }
     },
 
@@ -64,6 +73,7 @@ module.exports = {
         }
         catch(err){
             await client.end();
+            return null;
         }
     }
 }

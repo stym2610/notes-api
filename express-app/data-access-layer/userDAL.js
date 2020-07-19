@@ -8,8 +8,8 @@ const { Client } = require('pg');
 
 function getConnection(){
     return  new Client({
-          connectionString: process.env.DATABASE_URL,
-        //   connectionString: 'postgres://vxhndzidtvjwqz:d9911a89b48acabcd30911ffa5e8cba731dd4ac17bc2880cc8f7332625ab4d88@ec2-50-19-26-235.compute-1.amazonaws.com:5432/dc3lu4kj0bgis7',
+        //   connectionString: process.env.DATABASE_URL,
+          connectionString: 'postgres://vxhndzidtvjwqz:d9911a89b48acabcd30911ffa5e8cba731dd4ac17bc2880cc8f7332625ab4d88@ec2-50-19-26-235.compute-1.amazonaws.com:5432/dc3lu4kj0bgis7',
           ssl: {
             rejectUnauthorized: false
           }});
